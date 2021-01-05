@@ -4,6 +4,7 @@ import com.madzialenka.schoolmanagement.common.Gender;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,4 +35,14 @@ public class Student {
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     private Gender gender;
+
+    @OneToMany(mappedBy = "student")
+    private List<Grade> grades;
+
+    @ManyToMany
+    @JoinTable(
+        name = "students_schools",
+        joinColumns = @JoinColumn(name = "student_id"),
+        inverseJoinColumns = @JoinColumn(name = "school_id"))
+    private List<School> schools;
 }

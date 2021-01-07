@@ -3,6 +3,7 @@ package com.madzialenka.schoolmanagement.db.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,6 +29,6 @@ public class SchoolSubject {
     @JoinColumn(name = "school_id", nullable = false)
     private School school;
 
-    @OneToOne(mappedBy = "schoolSubject")
-    private Grade grade;
+    @OneToMany(mappedBy = "schoolSubject")
+    private List<Grade> grade;
 }

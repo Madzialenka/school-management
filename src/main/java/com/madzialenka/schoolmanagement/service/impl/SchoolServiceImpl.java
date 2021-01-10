@@ -10,14 +10,19 @@ import com.madzialenka.schoolmanagement.db.repository.SchoolRepository;
 import com.madzialenka.schoolmanagement.db.repository.SchoolSubjectRepository;
 import com.madzialenka.schoolmanagement.service.SchoolService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class SchoolServiceImpl implements SchoolService {
+
+    private static final String DEFAULT_SORT_BY = "id";
+    private static final Sort.Direction DEFAULT_SORT_DIRECTION = Sort.Direction.ASC;
     private final SchoolRepository schoolRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
 
@@ -30,6 +35,15 @@ public class SchoolServiceImpl implements SchoolService {
                 .collect(Collectors.toList());
         List<SchoolSubject> savedSubjects = schoolSubjectRepository.saveAll(schoolSubjects);
         return createSchoolResponseDTO(savedSchool, savedSubjects);
+    }
+
+    @Override
+    public List<SchoolResponseDTO> getSchools(String sortBy, Sort.Direction direction) {
+        sortBy = Optional.ofNullable(sortBy).orElse(DEFAULT_SORT_BY);
+        direction = Optional.ofNullable(direction).orElse(DEFAULT_SORT_DIRECTION);
+        return schoolRepository.findAll(Sort.by(direction, sortBy)).stream()
+                .map(school -> createSchoolResponseDTO(school, school.getSubjects()))
+                .collect(Collectors.toList());
     }
 
     private SchoolResponseDTO createSchoolResponseDTO(School savedSchool, List<SchoolSubject> savedSubjects) {

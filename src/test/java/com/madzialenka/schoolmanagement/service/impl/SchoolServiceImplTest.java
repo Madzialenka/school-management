@@ -1,13 +1,11 @@
 package com.madzialenka.schoolmanagement.service.impl;
 
-import com.madzialenka.schoolmanagement.api.dto.SchoolDataRequestDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolResponseDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectDataRequestDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectResponseDTO;
+import com.madzialenka.schoolmanagement.api.dto.*;
 import com.madzialenka.schoolmanagement.db.entity.School;
 import com.madzialenka.schoolmanagement.db.entity.SchoolSubject;
 import com.madzialenka.schoolmanagement.db.repository.SchoolRepository;
 import com.madzialenka.schoolmanagement.db.repository.SchoolSubjectRepository;
+import com.madzialenka.schoolmanagement.exception.SchoolNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -142,5 +141,43 @@ class SchoolServiceImplTest {
 
         List<SchoolResponseDTO> actual = underTest.getSchools(sortBy, direction);
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateSchool() {
+        Long id = 1L;
+        String town = "Warsaw";
+        String schoolNumber = "III";
+        SchoolSimpleDataRequestDTO requestDTO = new SchoolSimpleDataRequestDTO(town, schoolNumber);
+
+        List<SchoolSubject> subjects = Arrays.asList(
+                new SchoolSubject(1L, "maths", "John King", null, null),
+                new SchoolSubject(2L, "english", "Matthew Roll", null, null)
+        );
+        School school = new School(id, "London", "X", subjects, null);
+        Mockito.when(schoolRepository.findById(id)).thenReturn(Optional.of(school));
+        School updatedSchool = new School(id, town, schoolNumber, subjects, null);
+        Mockito.when(schoolRepository.save(updatedSchool)).thenReturn(updatedSchool);
+
+        List<SchoolSubjectResponseDTO> subjectsResponse = Arrays.asList(
+                new SchoolSubjectResponseDTO(1L, "maths", "John King"),
+                new SchoolSubjectResponseDTO(2L, "english", "Matthew Roll")
+        );
+        SchoolResponseDTO expected = new SchoolResponseDTO(id, town, schoolNumber, subjectsResponse);
+
+        SchoolResponseDTO actual = underTest.updateSchool(id, requestDTO);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateSchool_withThrownException() {
+        Long id = 1L;
+        SchoolSimpleDataRequestDTO requestDTO = Mockito.mock(SchoolSimpleDataRequestDTO.class);
+
+        Mockito.when(schoolRepository.findById(id)).thenReturn(Optional.empty());
+
+        SchoolNotFoundException e =
+                assertThrows(SchoolNotFoundException.class, () -> underTest.updateSchool(id, requestDTO));
+        Assertions.assertEquals(String.format("School with id: %d not found", id), e.getMessage());
     }
 }

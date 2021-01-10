@@ -1,13 +1,11 @@
 package com.madzialenka.schoolmanagement.service.impl;
 
-import com.madzialenka.schoolmanagement.api.dto.SchoolDataRequestDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolResponseDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectDataRequestDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectResponseDTO;
+import com.madzialenka.schoolmanagement.api.dto.*;
 import com.madzialenka.schoolmanagement.db.entity.School;
 import com.madzialenka.schoolmanagement.db.entity.SchoolSubject;
 import com.madzialenka.schoolmanagement.db.repository.SchoolRepository;
 import com.madzialenka.schoolmanagement.db.repository.SchoolSubjectRepository;
+import com.madzialenka.schoolmanagement.exception.SchoolNotFoundException;
 import com.madzialenka.schoolmanagement.service.SchoolService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -44,6 +42,23 @@ public class SchoolServiceImpl implements SchoolService {
         return schoolRepository.findAll(Sort.by(direction, sortBy)).stream()
                 .map(school -> createSchoolResponseDTO(school, school.getSubjects()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public SchoolResponseDTO updateSchool(Long id, SchoolSimpleDataRequestDTO requestDTO) {
+        School foundSchool = getSchoolById(id);
+        updateSchool(requestDTO, foundSchool);
+        School savedSchool = schoolRepository.save(foundSchool);
+        return createSchoolResponseDTO(savedSchool, savedSchool.getSubjects());
+    }
+
+    private School getSchoolById(Long id) {
+        return schoolRepository.findById(id).orElseThrow(() -> new SchoolNotFoundException(id));
+    }
+
+    private void updateSchool(SchoolSimpleDataRequestDTO requestDTO, School foundSchool) {
+        foundSchool.setTown(requestDTO.getTown());
+        foundSchool.setSchoolNumber(requestDTO.getSchoolNumber());
     }
 
     private SchoolResponseDTO createSchoolResponseDTO(School savedSchool, List<SchoolSubject> savedSubjects) {

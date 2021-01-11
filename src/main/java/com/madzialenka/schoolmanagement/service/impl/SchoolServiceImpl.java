@@ -52,6 +52,12 @@ public class SchoolServiceImpl implements SchoolService {
         return createSchoolResponseDTO(savedSchool, savedSchool.getSubjects());
     }
 
+    @Override
+    public void deleteSchool(Long id) {
+        School foundSchool = getSchoolById(id);
+        schoolRepository.delete(foundSchool);
+    }
+
     private School getSchoolById(Long id) {
         return schoolRepository.findById(id).orElseThrow(() -> new SchoolNotFoundException(id));
     }

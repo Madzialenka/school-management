@@ -31,4 +31,9 @@ public class SchoolController {
     public SchoolResponseDTO updateSchool(@PathVariable("id") Long id, @RequestBody SchoolSimpleDataRequestDTO requestDTO) {
         return schoolService.updateSchool(id, requestDTO);
     }
+
+    @DeleteMapping("{id}")
+    public void deleteSchool(@PathVariable("id") Long id) {
+        schoolService.deleteSchool(id);
+    }
 }

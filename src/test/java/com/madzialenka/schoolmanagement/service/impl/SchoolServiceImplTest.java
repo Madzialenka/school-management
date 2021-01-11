@@ -180,4 +180,26 @@ class SchoolServiceImplTest {
                 assertThrows(SchoolNotFoundException.class, () -> underTest.updateSchool(id, requestDTO));
         Assertions.assertEquals(String.format("School with id: %d not found", id), e.getMessage());
     }
+
+    @Test
+    void deleteSchool() {
+        Long id = 1L;
+
+        School school = new School(id, null, null, null, null);
+        Mockito.when(schoolRepository.findById(id)).thenReturn(Optional.of(school));
+
+        underTest.deleteSchool(id);
+        Mockito.verify(schoolRepository).delete(school);
+    }
+
+    @Test
+    void deleteSchool_withThrownException() {
+        Long id = 1L;
+
+        Mockito.when(schoolRepository.findById(id)).thenReturn(Optional.empty());
+
+        SchoolNotFoundException e =
+                assertThrows(SchoolNotFoundException.class, () -> underTest.deleteSchool(id));
+        Assertions.assertEquals(String.format("School with id: %d not found", id), e.getMessage());
+    }
 }

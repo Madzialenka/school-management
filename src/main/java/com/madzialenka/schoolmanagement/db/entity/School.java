@@ -25,7 +25,7 @@ public class School {
     @Column(name = "school_number", nullable = false)
     private String schoolNumber;
 
-    @OneToMany(mappedBy = "school")
+    @OneToMany(mappedBy = "school", cascade = {CascadeType.REMOVE})
     private List<SchoolSubject> subjects;
 
     @ManyToMany(mappedBy = "schools")

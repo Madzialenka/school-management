@@ -13,4 +13,6 @@ public interface SchoolService {
     List<SchoolResponseDTO> getSchools(String sortBy, Sort.Direction direction);
 
     SchoolResponseDTO updateSchool(Long id, SchoolSimpleDataRequestDTO requestDTO);
+
+    void deleteSchool(Long id);
 }

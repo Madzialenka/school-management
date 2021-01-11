@@ -25,7 +25,7 @@ public class Grade {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.REMOVE})
     @JoinColumn(name = "subject_id", nullable = false)
     private SchoolSubject schoolSubject;
 }

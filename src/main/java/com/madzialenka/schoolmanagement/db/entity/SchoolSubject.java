@@ -29,6 +29,6 @@ public class SchoolSubject {
     @JoinColumn(name = "school_id", nullable = false)
     private School school;
 
-    @OneToMany(mappedBy = "schoolSubject")
+    @OneToMany(mappedBy = "schoolSubject", cascade = {CascadeType.REMOVE})
     private List<Grade> grade;
 }

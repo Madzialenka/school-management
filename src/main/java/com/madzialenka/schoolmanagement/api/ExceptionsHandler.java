@@ -1,9 +1,7 @@
 package com.madzialenka.schoolmanagement.api;
 
 import com.madzialenka.schoolmanagement.api.dto.ErrorDTO;
-import com.madzialenka.schoolmanagement.exception.SchoolNotFoundException;
-import com.madzialenka.schoolmanagement.exception.StudentAlreadyExistsException;
-import com.madzialenka.schoolmanagement.exception.StudentNotFoundException;
+import com.madzialenka.schoolmanagement.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -27,6 +25,24 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({StudentNotFoundException.class})
     public ErrorDTO handleStudentNotFoundException(StudentNotFoundException e) {
+        return new ErrorDTO(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({SchoolSubjectNotFoundException.class})
+    public ErrorDTO handleSchoolSubjectNotFoundException(SchoolSubjectNotFoundException e) {
+        return new ErrorDTO(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    @ExceptionHandler({StudentNotInSchoolException.class})
+    public ErrorDTO handleStudentNotInSchoolException(StudentNotInSchoolException e) {
+        return new ErrorDTO(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    @ExceptionHandler({SubjectNotInSchoolException.class})
+    public ErrorDTO handleSubjectNotInSchoolException(SubjectNotInSchoolException e) {
         return new ErrorDTO(e.getMessage());
     }
 }

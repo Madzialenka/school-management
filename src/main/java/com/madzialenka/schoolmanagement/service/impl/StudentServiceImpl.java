@@ -8,16 +8,22 @@ import com.madzialenka.schoolmanagement.db.entity.Student;
 import com.madzialenka.schoolmanagement.db.repository.SchoolRepository;
 import com.madzialenka.schoolmanagement.db.repository.StudentRepository;
 import com.madzialenka.schoolmanagement.exception.StudentAlreadyExistsException;
+import com.madzialenka.schoolmanagement.exception.StudentNotFoundException;
 import com.madzialenka.schoolmanagement.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class StudentServiceImpl implements StudentService {
+
+    private static final String DEFAULT_SORT_BY = "id";
+    private static final Sort.Direction DEFAULT_SORT_DIRECTION = Sort.Direction.ASC;
     private final StudentRepository studentRepository;
     private final SchoolRepository schoolRepository;
 
@@ -28,6 +34,34 @@ public class StudentServiceImpl implements StudentService {
         updateStudent(requestDTO, student);
         Student savedStudent = studentRepository.save(student);
         return createStudentResponseDTO(savedStudent);
+    }
+
+    @Override
+    public List<StudentResponseDTO> getStudents(String sortBy, Sort.Direction direction) {
+        sortBy = Optional.ofNullable(sortBy).orElse(DEFAULT_SORT_BY);
+        direction = Optional.ofNullable(direction).orElse(DEFAULT_SORT_DIRECTION);
+        return studentRepository.findAll(Sort.by(direction, sortBy)).stream()
+                .map(this::createStudentResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public StudentResponseDTO updateStudent(Long id, StudentDataRequestDTO requestDTO) {
+        validateStudentUniqueness(requestDTO);
+        Student foundStudent = getStudentById(id);
+        updateStudent(requestDTO, foundStudent);
+        Student savedStudent = studentRepository.save(foundStudent);
+        return createStudentResponseDTO(savedStudent);
+    }
+
+    @Override
+    public void deleteStudent(Long id) {
+        Student foundStudent = getStudentById(id);
+        studentRepository.delete(foundStudent);
+    }
+
+    private Student getStudentById(Long id) {
+        return studentRepository.findById(id).orElseThrow(() -> new StudentNotFoundException(id));
     }
 
     private void validateStudentUniqueness(StudentDataRequestDTO requestDTO) {

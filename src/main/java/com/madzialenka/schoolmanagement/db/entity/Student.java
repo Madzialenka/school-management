@@ -36,7 +36,7 @@ public class Student {
     @Column(name = "gender", nullable = false)
     private Gender gender;
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.REMOVE})
     private List<Grade> grades;
 
     @ManyToMany

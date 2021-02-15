@@ -3,6 +3,7 @@ package com.madzialenka.schoolmanagement.api;
 import com.madzialenka.schoolmanagement.api.dto.ErrorDTO;
 import com.madzialenka.schoolmanagement.exception.SchoolNotFoundException;
 import com.madzialenka.schoolmanagement.exception.StudentAlreadyExistsException;
+import com.madzialenka.schoolmanagement.exception.StudentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,6 +21,12 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler({StudentAlreadyExistsException.class})
     public ErrorDTO handleStudentAlreadyExistsException(StudentAlreadyExistsException e) {
+        return new ErrorDTO(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({StudentNotFoundException.class})
+    public ErrorDTO handleStudentNotFoundException(StudentNotFoundException e) {
         return new ErrorDTO(e.getMessage());
     }
 }

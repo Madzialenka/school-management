@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionsHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({SchoolNotFoundException.class})
-    public ErrorDTO handleSchoolNotFoundException(SchoolNotFoundException e) {
+    @ExceptionHandler({SchoolNotFoundException.class, StudentNotFoundException.class,
+            SchoolSubjectNotFoundException.class})
+    public ErrorDTO handleNotFoundException(RuntimeException e) {
         return new ErrorDTO(e.getMessage());
     }
 
@@ -22,27 +23,9 @@ public class ExceptionsHandler {
         return new ErrorDTO(e.getMessage());
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({StudentNotFoundException.class})
-    public ErrorDTO handleStudentNotFoundException(StudentNotFoundException e) {
-        return new ErrorDTO(e.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({SchoolSubjectNotFoundException.class})
-    public ErrorDTO handleSchoolSubjectNotFoundException(SchoolSubjectNotFoundException e) {
-        return new ErrorDTO(e.getMessage());
-    }
-
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    @ExceptionHandler({StudentNotInSchoolException.class})
-    public ErrorDTO handleStudentNotInSchoolException(StudentNotInSchoolException e) {
-        return new ErrorDTO(e.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    @ExceptionHandler({SubjectNotInSchoolException.class})
-    public ErrorDTO handleSubjectNotInSchoolException(SubjectNotInSchoolException e) {
+    @ExceptionHandler({StudentNotInSchoolException.class, SubjectNotInSchoolException.class})
+    public ErrorDTO handleNotInSchoolException(RuntimeException e) {
         return new ErrorDTO(e.getMessage());
     }
 }

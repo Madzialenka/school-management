@@ -1,9 +1,6 @@
 package com.madzialenka.schoolmanagement.service.impl;
 
-import com.madzialenka.schoolmanagement.api.dto.GradeDataRequestDTO;
-import com.madzialenka.schoolmanagement.api.dto.GradeResponseDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectResponseDTO;
-import com.madzialenka.schoolmanagement.api.dto.StudentSimpleResponseDTO;
+import com.madzialenka.schoolmanagement.api.dto.*;
 import com.madzialenka.schoolmanagement.db.entity.Grade;
 import com.madzialenka.schoolmanagement.db.entity.School;
 import com.madzialenka.schoolmanagement.db.entity.SchoolSubject;
@@ -16,6 +13,9 @@ import com.madzialenka.schoolmanagement.exception.*;
 import com.madzialenka.schoolmanagement.service.GradeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -33,6 +33,39 @@ public class GradeServiceImpl implements GradeService {
         updateGrade(grade, requestDTO, schoolSubjectId);
         Grade savedGrade = gradeRepository.save(grade);
         return createGradeResponseDTO(savedGrade);
+    }
+
+    @Override
+    public List<GradeSimpleResponseDTO> getGrades(Long schoolId, Long schoolSubjectId) {
+        validateSubjectAndSchool(schoolId, schoolSubjectId);
+        SchoolSubject subject = getSubjectById(schoolSubjectId);
+        return gradeRepository.findBySchoolSubject(subject).stream()
+                .map(this::createGradeSimpleResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private GradeSimpleResponseDTO createGradeSimpleResponseDTO(Grade grade) {
+        GradeSimpleResponseDTO responseDTO = new GradeSimpleResponseDTO();
+        responseDTO.setValue(grade.getValue());
+        StudentBasicDataResponseDTO student = createStudentBasicDataResponseDTO(grade);
+        responseDTO.setStudent(student);
+        return responseDTO;
+    }
+
+    private StudentBasicDataResponseDTO createStudentBasicDataResponseDTO(Grade grade) {
+        StudentBasicDataResponseDTO student = new StudentBasicDataResponseDTO();
+        student.setSurname(grade.getStudent().getSurname());
+        student.setName(grade.getStudent().getName());
+        student.setEmail(grade.getStudent().getEmail());
+        return student;
+    }
+
+    private void validateSubjectAndSchool(Long schoolId, Long schoolSubjectId) {
+        School school = getSchoolById(schoolId);
+        SchoolSubject subject = getSubjectById(schoolSubjectId);
+        if (!school.getSubjects().contains(subject)) {
+            throw new SubjectNotInSchoolException(schoolId, schoolSubjectId);
+        }
     }
 
     private GradeResponseDTO createGradeResponseDTO(Grade savedGrade) {
@@ -74,7 +107,7 @@ public class GradeServiceImpl implements GradeService {
     }
 
     private void validateRequestedData(Long schoolId, Long schoolSubjectId, GradeDataRequestDTO requestDTO) {
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new SchoolNotFoundException(schoolId));
+        School school = getSchoolById(schoolId);
         SchoolSubject subject = getSubjectById(schoolSubjectId);
         Long studentId = requestDTO.getStudentId();
         Student student = getStudentById(studentId);
@@ -84,6 +117,10 @@ public class GradeServiceImpl implements GradeService {
         if (!school.getStudents().contains(student)) {
             throw new StudentNotInSchoolException(schoolId, studentId);
         }
+    }
+
+    private School getSchoolById(Long schoolId) {
+        return schoolRepository.findById(schoolId).orElseThrow(() -> new SchoolNotFoundException(schoolId));
     }
 
     private SchoolSubject getSubjectById(Long schoolSubjectId) {

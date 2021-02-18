@@ -6,6 +6,8 @@ import com.madzialenka.schoolmanagement.service.SchoolSubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("schools/{schoolId}/school-subjects")
@@ -29,5 +31,10 @@ public class SchoolSubjectController {
     public void deleteSchoolSubject(@PathVariable("schoolId") Long schoolId,
                                     @PathVariable("schoolSubjectId") Long schoolSubjectId) {
         schoolSubjectService.deleteSchoolSubject(schoolId, schoolSubjectId);
+    }
+
+    @GetMapping
+    public List<SchoolSubjectResponseDTO> getSchoolSubjects(@PathVariable("schoolId") Long schoolId) {
+        return schoolSubjectService.getSchoolSubjects(schoolId);
     }
 }

@@ -11,7 +11,11 @@ import com.madzialenka.schoolmanagement.exception.SchoolSubjectNotFoundException
 import com.madzialenka.schoolmanagement.exception.SubjectNotInSchoolException;
 import com.madzialenka.schoolmanagement.service.SchoolSubjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -42,6 +46,14 @@ public class SchoolSubjectServiceImpl implements SchoolSubjectService {
         validateSubjectAndSchool(schoolId, schoolSubjectId);
         SchoolSubject foundSchoolSubject = getSchoolSubjectById(schoolSubjectId);
         schoolSubjectRepository.delete(foundSchoolSubject);
+    }
+
+    @Override
+    public List<SchoolSubjectResponseDTO> getSchoolSubjects(Long schoolId) {
+        School school = getSchoolById(schoolId);
+        return schoolSubjectRepository.findBySchool(school, Sort.by(Sort.Direction.ASC, "id")).stream()
+                .map(this::createSchoolSubjectResponseDTO)
+                .collect(Collectors.toList());
     }
 
     private void updateSchoolSubjectBasicData(SchoolSubject foundSubject, SchoolSubjectDataRequestDTO requestDTO) {

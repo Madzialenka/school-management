@@ -3,6 +3,8 @@ package com.madzialenka.schoolmanagement.service;
 import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectDataRequestDTO;
 import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectResponseDTO;
 
+import java.util.List;
+
 public interface SchoolSubjectService {
     SchoolSubjectResponseDTO createSchoolSubject(Long schoolId, SchoolSubjectDataRequestDTO requestDTO);
 
@@ -10,4 +12,6 @@ public interface SchoolSubjectService {
                                                  SchoolSubjectDataRequestDTO requestDTO);
 
     void deleteSchoolSubject(Long schoolId, Long schoolSubjectId);
+
+    List<SchoolSubjectResponseDTO> getSchoolSubjects(Long schoolId);
 }

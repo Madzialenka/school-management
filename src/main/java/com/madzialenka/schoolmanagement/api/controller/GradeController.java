@@ -27,4 +27,11 @@ public class GradeController {
                                                   @PathVariable("schoolSubjectId") Long schoolSubjectId) {
         return gradeService.getGrades(schoolId, schoolSubjectId);
     }
+
+    @DeleteMapping("{gradeId}")
+    public void deleteGrade(@PathVariable("schoolId") Long schoolId,
+                            @PathVariable("schoolSubjectId") Long schoolSubjectId,
+                            @PathVariable("gradeId") Long gradeId) {
+        gradeService.deleteGrade(schoolId, schoolSubjectId, gradeId);
+    }
 }

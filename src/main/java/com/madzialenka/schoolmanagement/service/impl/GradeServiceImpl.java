@@ -45,8 +45,20 @@ public class GradeServiceImpl implements GradeService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void deleteGrade(Long schoolId, Long schoolSubjectId, Long gradeId) {
+        validateSubjectAndSchool(schoolId, schoolSubjectId);
+        Grade foundGrade = getGradeById(gradeId);
+        gradeRepository.delete(foundGrade);
+    }
+
+    private Grade getGradeById(Long gradeId) {
+        return gradeRepository.findById(gradeId).orElseThrow(() -> new GradeNotFoundException(gradeId));
+    }
+
     private GradeSimpleResponseDTO createGradeSimpleResponseDTO(Grade grade) {
         GradeSimpleResponseDTO responseDTO = new GradeSimpleResponseDTO();
+        responseDTO.setId(grade.getId());
         responseDTO.setValue(grade.getValue());
         StudentBasicDataResponseDTO student = createStudentBasicDataResponseDTO(grade);
         responseDTO.setStudent(student);

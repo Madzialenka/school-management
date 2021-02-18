@@ -12,7 +12,7 @@ public class ExceptionsHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({SchoolNotFoundException.class, StudentNotFoundException.class,
-            SchoolSubjectNotFoundException.class})
+            SchoolSubjectNotFoundException.class, GradeNotFoundException.class})
     public ErrorDTO handleNotFoundException(RuntimeException e) {
         return new ErrorDTO(e.getMessage());
     }

@@ -10,4 +10,6 @@ public interface GradeService {
     GradeResponseDTO createGrade(Long schoolId, Long schoolSubjectId, GradeDataRequestDTO requestDTO);
 
     List<GradeSimpleResponseDTO> getGrades(Long schoolId, Long schoolSubjectId);
+
+    void deleteGrade(Long schoolId, Long schoolSubjectId, Long gradeId);
 }

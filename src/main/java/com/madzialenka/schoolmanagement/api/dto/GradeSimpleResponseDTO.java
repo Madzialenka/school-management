@@ -9,6 +9,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 public class GradeSimpleResponseDTO {
+    private Long id;
     private Short value;
     private StudentBasicDataResponseDTO student;
 }

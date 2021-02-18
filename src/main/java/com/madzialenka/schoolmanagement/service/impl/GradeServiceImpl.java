@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 @Service
 public class GradeServiceImpl implements GradeService {
 
+    private static final Sort.Direction DIRECTION = Sort.Direction.ASC;
+    private static final String SORT_BY = "value";
     private final SchoolRepository schoolRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
     private final StudentRepository studentRepository;
@@ -40,7 +42,7 @@ public class GradeServiceImpl implements GradeService {
     public List<GradeSimpleResponseDTO> getGrades(Long schoolId, Long schoolSubjectId) {
         validateSubjectAndSchool(schoolId, schoolSubjectId);
         SchoolSubject subject = getSubjectById(schoolSubjectId);
-        return gradeRepository.findBySchoolSubject(subject, Sort.by(Sort.Direction.ASC, "value")).stream()
+        return gradeRepository.findBySchoolSubject(subject, Sort.by(DIRECTION, SORT_BY)).stream()
                 .map(this::createGradeSimpleResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -76,8 +78,8 @@ public class GradeServiceImpl implements GradeService {
 
     private void validateSubjectAndSchool(Long schoolId, Long schoolSubjectId) {
         School school = getSchoolById(schoolId);
-        SchoolSubject subject = getSubjectById(schoolSubjectId);
-        if (!school.getSubjects().contains(subject)) {
+        getSubjectById(schoolSubjectId);
+        if (schoolSubjectRepository.findByIdAndSchool(schoolSubjectId, school).isEmpty()) {
             throw new SubjectNotInSchoolException(schoolId, schoolSubjectId);
         }
     }
@@ -122,13 +124,13 @@ public class GradeServiceImpl implements GradeService {
 
     private void validateRequestedData(Long schoolId, Long schoolSubjectId, GradeDataRequestDTO requestDTO) {
         School school = getSchoolById(schoolId);
-        SchoolSubject subject = getSubjectById(schoolSubjectId);
+        getSubjectById(schoolSubjectId);
         Long studentId = requestDTO.getStudentId();
-        Student student = getStudentById(studentId);
-        if (!school.getSubjects().contains(subject)) {
+        getStudentById(studentId);
+        if (schoolSubjectRepository.findByIdAndSchool(schoolSubjectId, school).isEmpty()) {
             throw new SubjectNotInSchoolException(schoolId, schoolSubjectId);
         }
-        if (!school.getStudents().contains(student)) {
+        if (studentRepository.findByIdAndSchool(studentId, school).isEmpty()) {
             throw new StudentNotInSchoolException(schoolId, studentId);
         }
     }

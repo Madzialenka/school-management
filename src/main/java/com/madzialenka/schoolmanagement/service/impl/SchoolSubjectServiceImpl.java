@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class SchoolSubjectServiceImpl implements SchoolSubjectService {
+
+    private static final Sort.Direction DIRECTION = Sort.Direction.ASC;
+    private static final String SORT_BY = "id";
     private final SchoolRepository schoolRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
 
@@ -51,7 +54,7 @@ public class SchoolSubjectServiceImpl implements SchoolSubjectService {
     @Override
     public List<SchoolSubjectResponseDTO> getSchoolSubjects(Long schoolId) {
         School school = getSchoolById(schoolId);
-        return schoolSubjectRepository.findBySchool(school, Sort.by(Sort.Direction.ASC, "id")).stream()
+        return schoolSubjectRepository.findBySchool(school, Sort.by(DIRECTION, SORT_BY)).stream()
                 .map(this::createSchoolSubjectResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -63,8 +66,8 @@ public class SchoolSubjectServiceImpl implements SchoolSubjectService {
 
     private void validateSubjectAndSchool(Long schoolId, Long schoolSubjectId) {
         School school = getSchoolById(schoolId);
-        SchoolSubject subject = getSchoolSubjectById(schoolSubjectId);
-        if (!school.getSubjects().contains(subject)) {
+        getSchoolSubjectById(schoolSubjectId);
+        if (schoolSubjectRepository.findByIdAndSchool(schoolSubjectId, school).isEmpty()) {
             throw new SubjectNotInSchoolException(schoolId, schoolSubjectId);
         }
     }

@@ -12,6 +12,7 @@ import com.madzialenka.schoolmanagement.db.repository.StudentRepository;
 import com.madzialenka.schoolmanagement.exception.*;
 import com.madzialenka.schoolmanagement.service.GradeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class GradeServiceImpl implements GradeService {
     public List<GradeSimpleResponseDTO> getGrades(Long schoolId, Long schoolSubjectId) {
         validateSubjectAndSchool(schoolId, schoolSubjectId);
         SchoolSubject subject = getSubjectById(schoolSubjectId);
-        return gradeRepository.findBySchoolSubject(subject).stream()
+        return gradeRepository.findBySchoolSubject(subject, Sort.by(Sort.Direction.ASC, "value")).stream()
                 .map(this::createGradeSimpleResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -53,11 +54,12 @@ public class GradeServiceImpl implements GradeService {
     }
 
     private StudentBasicDataResponseDTO createStudentBasicDataResponseDTO(Grade grade) {
-        StudentBasicDataResponseDTO student = new StudentBasicDataResponseDTO();
-        student.setSurname(grade.getStudent().getSurname());
-        student.setName(grade.getStudent().getName());
-        student.setEmail(grade.getStudent().getEmail());
-        return student;
+        StudentBasicDataResponseDTO responseDTO = new StudentBasicDataResponseDTO();
+        Student student = grade.getStudent();
+        responseDTO.setSurname(student.getSurname());
+        responseDTO.setName(student.getName());
+        responseDTO.setEmail(student.getEmail());
+        return responseDTO;
     }
 
     private void validateSubjectAndSchool(Long schoolId, Long schoolSubjectId) {

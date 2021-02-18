@@ -7,6 +7,8 @@ import com.madzialenka.schoolmanagement.db.entity.SchoolSubject;
 import com.madzialenka.schoolmanagement.db.repository.SchoolRepository;
 import com.madzialenka.schoolmanagement.db.repository.SchoolSubjectRepository;
 import com.madzialenka.schoolmanagement.exception.SchoolNotFoundException;
+import com.madzialenka.schoolmanagement.exception.SchoolSubjectNotFoundException;
+import com.madzialenka.schoolmanagement.exception.SubjectNotInSchoolException;
 import com.madzialenka.schoolmanagement.service.SchoolSubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,41 @@ public class SchoolSubjectServiceImpl implements SchoolSubjectService {
         updateSchoolSubject(schoolSubject, schoolId, requestDTO);
         SchoolSubject savedSchoolSubject = schoolSubjectRepository.save(schoolSubject);
         return createSchoolSubjectResponseDTO(savedSchoolSubject);
+    }
+
+    @Override
+    public SchoolSubjectResponseDTO updateSchoolSubject(Long schoolId, Long schoolSubjectId,
+                                                        SchoolSubjectDataRequestDTO requestDTO) {
+        validateSubjectAndSchool(schoolId, schoolSubjectId);
+        SchoolSubject foundSubject = getSchoolSubjectById(schoolSubjectId);
+        updateSchoolSubjectBasicData(foundSubject, requestDTO);
+        SchoolSubject savedSchoolSubject = schoolSubjectRepository.save(foundSubject);
+        return createSchoolSubjectResponseDTO(savedSchoolSubject);
+    }
+
+    @Override
+    public void deleteSchoolSubject(Long schoolId, Long schoolSubjectId) {
+        validateSubjectAndSchool(schoolId, schoolSubjectId);
+        SchoolSubject foundSchoolSubject = getSchoolSubjectById(schoolSubjectId);
+        schoolSubjectRepository.delete(foundSchoolSubject);
+    }
+
+    private void updateSchoolSubjectBasicData(SchoolSubject foundSubject, SchoolSubjectDataRequestDTO requestDTO) {
+        foundSubject.setName(requestDTO.getName());
+        foundSubject.setTeacherName(requestDTO.getTeacherName());
+    }
+
+    private void validateSubjectAndSchool(Long schoolId, Long schoolSubjectId) {
+        School school = getSchoolById(schoolId);
+        SchoolSubject subject = getSchoolSubjectById(schoolSubjectId);
+        if (!school.getSubjects().contains(subject)) {
+            throw new SubjectNotInSchoolException(schoolId, schoolSubjectId);
+        }
+    }
+
+    private SchoolSubject getSchoolSubjectById(Long schoolSubjectId) {
+        return schoolSubjectRepository.findById(schoolSubjectId)
+                .orElseThrow(() -> new SchoolSubjectNotFoundException(schoolSubjectId));
     }
 
     private SchoolSubjectResponseDTO createSchoolSubjectResponseDTO(SchoolSubject savedSchoolSubject) {

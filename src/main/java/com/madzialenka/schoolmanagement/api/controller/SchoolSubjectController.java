@@ -17,4 +17,17 @@ public class SchoolSubjectController {
                                                         @RequestBody SchoolSubjectDataRequestDTO requestDTO) {
         return schoolSubjectService.createSchoolSubject(schoolId, requestDTO);
     }
+
+    @PutMapping("{schoolSubjectId}")
+    public SchoolSubjectResponseDTO updateSchoolSubject(@PathVariable("schoolId") Long schoolId,
+                                                        @PathVariable("schoolSubjectId") Long schoolSubjectId,
+                                                        @RequestBody SchoolSubjectDataRequestDTO requestDTO) {
+        return schoolSubjectService.updateSchoolSubject(schoolId, schoolSubjectId, requestDTO);
+    }
+
+    @DeleteMapping("{schoolSubjectId}")
+    public void deleteSchoolSubject(@PathVariable("schoolId") Long schoolId,
+                                    @PathVariable("schoolSubjectId") Long schoolSubjectId) {
+        schoolSubjectService.deleteSchoolSubject(schoolId, schoolSubjectId);
+    }
 }

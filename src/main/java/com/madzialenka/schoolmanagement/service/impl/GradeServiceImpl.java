@@ -130,7 +130,7 @@ public class GradeServiceImpl implements GradeService {
         if (schoolSubjectRepository.findByIdAndSchool(schoolSubjectId, school).isEmpty()) {
             throw new SubjectNotInSchoolException(schoolId, schoolSubjectId);
         }
-        if (studentRepository.findByIdAndSchool(studentId, school).isEmpty()) {
+        if (studentRepository.findByIdAndSchools_id(studentId, schoolId).isEmpty()) {
             throw new StudentNotInSchoolException(schoolId, studentId);
         }
     }

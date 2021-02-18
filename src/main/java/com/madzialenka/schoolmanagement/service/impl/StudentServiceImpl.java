@@ -29,7 +29,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponseDTO createStudent(StudentDataRequestDTO requestDTO) {
-        validateStudentUniqueness(requestDTO);
+        validateStudentCreation(requestDTO);
         Student student = new Student();
         updateStudent(requestDTO, student);
         Student savedStudent = studentRepository.save(student);
@@ -47,11 +47,19 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponseDTO updateStudent(Long id, StudentDataRequestDTO requestDTO) {
-        validateStudentUniqueness(requestDTO);
+        validateStudentUpdate(requestDTO, id);
         Student foundStudent = getStudentById(id);
         updateStudent(requestDTO, foundStudent);
         Student savedStudent = studentRepository.save(foundStudent);
         return createStudentResponseDTO(savedStudent);
+    }
+
+    private void validateStudentUpdate(StudentDataRequestDTO requestDTO, Long id) {
+        String pesel = requestDTO.getPesel();
+        String email = requestDTO.getEmail();
+        if (!studentRepository.findByPeselOrEmailAndNotId(pesel, email, id).isEmpty()) {
+            throw new StudentAlreadyExistsException(pesel, email);
+        }
     }
 
     @Override
@@ -64,7 +72,7 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findById(id).orElseThrow(() -> new StudentNotFoundException(id));
     }
 
-    private void validateStudentUniqueness(StudentDataRequestDTO requestDTO) {
+    private void validateStudentCreation(StudentDataRequestDTO requestDTO) {
         String pesel = requestDTO.getPesel();
         String email = requestDTO.getEmail();
         if (!studentRepository.findByPeselOrEmail(pesel, email).isEmpty()) {

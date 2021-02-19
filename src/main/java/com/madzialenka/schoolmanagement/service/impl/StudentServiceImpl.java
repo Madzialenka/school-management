@@ -1,5 +1,6 @@
 package com.madzialenka.schoolmanagement.service.impl;
 
+import com.madzialenka.schoolmanagement.api.dto.PageResponseDTO;
 import com.madzialenka.schoolmanagement.api.dto.SchoolSimpleResponseDTO;
 import com.madzialenka.schoolmanagement.api.dto.StudentDataRequestDTO;
 import com.madzialenka.schoolmanagement.api.dto.StudentResponseDTO;
@@ -11,6 +12,8 @@ import com.madzialenka.schoolmanagement.exception.StudentAlreadyExistsException;
 import com.madzialenka.schoolmanagement.exception.StudentNotFoundException;
 import com.madzialenka.schoolmanagement.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,8 @@ public class StudentServiceImpl implements StudentService {
 
     private static final String DEFAULT_SORT_BY = "id";
     private static final Sort.Direction DEFAULT_SORT_DIRECTION = Sort.Direction.ASC;
+    public static final int DEFAULT_PAGE_NUMBER = 0;
+    private static final int DEFAULT_PAGE_SIZE = 3;
     private final StudentRepository studentRepository;
     private final SchoolRepository schoolRepository;
 
@@ -37,12 +42,29 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<StudentResponseDTO> getStudents(String sortBy, Sort.Direction direction) {
+    public PageResponseDTO<StudentResponseDTO> getStudents(String sortBy, Sort.Direction direction,
+                                                           Integer pageNumber, Integer pageSize) {
         sortBy = Optional.ofNullable(sortBy).orElse(DEFAULT_SORT_BY);
         direction = Optional.ofNullable(direction).orElse(DEFAULT_SORT_DIRECTION);
-        return studentRepository.findAll(Sort.by(direction, sortBy)).stream()
+        pageNumber = Optional.ofNullable(pageNumber).orElse(DEFAULT_PAGE_NUMBER);
+        pageSize = Optional.ofNullable(pageSize).orElse(DEFAULT_PAGE_SIZE);
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortBy));
+        Page<Student> students = studentRepository.findAll(pageable);
+        List<StudentResponseDTO> elements = students.getContent().stream()
                 .map(this::createStudentResponseDTO)
                 .collect(Collectors.toList());
+        return createPageResponseDTO(students, elements);
+    }
+
+    private PageResponseDTO<StudentResponseDTO> createPageResponseDTO(Page<Student> students,
+                                                                      List<StudentResponseDTO> elements) {
+        return PageResponseDTO.<StudentResponseDTO>builder()
+                .elements(elements)
+                .pageNumber(students.getNumber())
+                .pageSize(students.getSize())
+                .numberOfPages(students.getTotalPages())
+                .numberOfElements(students.getTotalElements())
+                .build();
     }
 
     @Override

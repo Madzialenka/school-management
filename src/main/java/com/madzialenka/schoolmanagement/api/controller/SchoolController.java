@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("schools")
@@ -16,7 +18,7 @@ public class SchoolController {
     private final SchoolService schoolService;
 
     @PostMapping
-    public SchoolResponseDTO createSchool(@RequestBody SchoolDataRequestDTO schoolDataRequestDTO) {
+    public SchoolResponseDTO createSchool(@Valid @RequestBody SchoolDataRequestDTO schoolDataRequestDTO) {
         return schoolService.createSchool(schoolDataRequestDTO);
     }
 

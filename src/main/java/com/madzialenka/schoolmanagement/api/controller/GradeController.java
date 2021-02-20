@@ -7,6 +7,7 @@ import com.madzialenka.schoolmanagement.service.GradeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class GradeController {
     @PostMapping
     public GradeResponseDTO createGrade(@PathVariable("schoolId") Long schoolId,
                                         @PathVariable("schoolSubjectId") Long schoolSubjectId,
-                                        @RequestBody GradeDataRequestDTO requestDTO) {
+                                        @Valid @RequestBody GradeDataRequestDTO requestDTO) {
         return gradeService.createGrade(schoolId, schoolSubjectId, requestDTO);
     }
 

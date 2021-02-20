@@ -12,7 +12,6 @@ import com.madzialenka.schoolmanagement.exception.StudentAlreadyExistsException;
 import com.madzialenka.schoolmanagement.exception.StudentNotFoundException;
 import com.madzialenka.schoolmanagement.service.StudentService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -51,7 +49,6 @@ public class StudentServiceImpl implements StudentService {
         pageNumber = Optional.ofNullable(pageNumber).orElse(DEFAULT_PAGE_NUMBER);
         pageSize = Optional.ofNullable(pageSize).orElse(DEFAULT_PAGE_SIZE);
         PageRequest pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortBy));
-        log.info("PageRequest = {}", pageable);
         Page<Student> students = studentRepository.findAll(pageable);
         List<StudentResponseDTO> elements = students.getContent().stream()
                 .map(this::createStudentResponseDTO)

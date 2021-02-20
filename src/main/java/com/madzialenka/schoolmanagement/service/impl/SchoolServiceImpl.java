@@ -8,6 +8,8 @@ import com.madzialenka.schoolmanagement.db.repository.SchoolSubjectRepository;
 import com.madzialenka.schoolmanagement.exception.SchoolNotFoundException;
 import com.madzialenka.schoolmanagement.service.SchoolService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ public class SchoolServiceImpl implements SchoolService {
 
     private static final String DEFAULT_SORT_BY = "id";
     private static final Sort.Direction DEFAULT_SORT_DIRECTION = Sort.Direction.ASC;
+    private static final int DEFAULT_PAGE_NUMBER = 0;
+    private static final int DEFAULT_PAGE_SIZE = 1;
     private final SchoolRepository schoolRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
 
@@ -36,12 +40,29 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
-    public List<SchoolResponseDTO> getSchools(String sortBy, Sort.Direction direction) {
+    public PageResponseDTO<SchoolResponseDTO> getSchools(String sortBy, Sort.Direction direction,
+                                                         Integer pageNumber, Integer pageSize) {
         sortBy = Optional.ofNullable(sortBy).orElse(DEFAULT_SORT_BY);
         direction = Optional.ofNullable(direction).orElse(DEFAULT_SORT_DIRECTION);
-        return schoolRepository.findAll(Sort.by(direction, sortBy)).stream()
+        pageNumber = Optional.ofNullable(pageNumber).orElse(DEFAULT_PAGE_NUMBER);
+        pageSize = Optional.ofNullable(pageSize).orElse(DEFAULT_PAGE_SIZE);
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortBy));
+        Page<School> schools = schoolRepository.findAll(pageable);
+        List<SchoolResponseDTO> elements = schools.getContent().stream()
                 .map(school -> createSchoolResponseDTO(school, school.getSubjects()))
                 .collect(Collectors.toList());
+        return createPageResponseDTO(schools, elements);
+    }
+
+    private PageResponseDTO<SchoolResponseDTO> createPageResponseDTO(Page<School> schools,
+                                                                     List<SchoolResponseDTO> elements) {
+        return PageResponseDTO.<SchoolResponseDTO>builder()
+                .elements(elements)
+                .pageNumber(schools.getNumber())
+                .pageSize(schools.getSize())
+                .numberOfPages(schools.getTotalPages())
+                .numberOfElements(schools.getTotalElements())
+                .build();
     }
 
     @Override

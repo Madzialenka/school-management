@@ -11,6 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -18,13 +21,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 class SchoolServiceImplTest {
 
     private static final String DEFAULT_SORT_BY = "id";
     private static final Sort.Direction DEFAULT_SORT_DIRECTION = Sort.Direction.ASC;
+    private static final int DEFAULT_PAGE_NUMBER = 0;
+    private static final int DEFAULT_PAGE_SIZE = 1;
 
     private SchoolServiceImpl underTest;
     private SchoolRepository schoolRepository;
@@ -75,6 +80,11 @@ class SchoolServiceImplTest {
     void getSchools_withNotNullParams() {
         String sortBy = "town";
         Sort.Direction direction = Sort.Direction.DESC;
+        int pageNumber = 1;
+        int pageSize = 2;
+        long numberOfElements = 5L;
+        double pages = (double) numberOfElements / (double) pageSize;
+        int numberOfPages = (int) Math.ceil(pages);
 
         List<SchoolSubject> subjects1 = Arrays.asList(
                 new SchoolSubject(1L, "maths", "John King", null, null),
@@ -84,11 +94,14 @@ class SchoolServiceImplTest {
                 new SchoolSubject(3L, "geography", "Linda Morales", null, null),
                 new SchoolSubject(4L, "history", "Ann Hat", null, null)
         );
-        List<School> schools = Arrays.asList(
+        List<School> elements = Arrays.asList(
                 new School(1L, "Warsaw", "III", subjects1, null),
                 new School(2L, "London", "IV", subjects2, null)
         );
-        Mockito.when(schoolRepository.findAll(Sort.by(direction, sortBy))).thenReturn(schools);
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortBy));
+        Page<School> schools = new PageImpl<>(elements, pageable, numberOfElements);
+        Mockito.when(schoolRepository.findAll(pageable))
+                .thenReturn(schools);
 
         List<SchoolSubjectResponseDTO> subjectsResponse1 = Arrays.asList(
                 new SchoolSubjectResponseDTO(1L, "maths", "John King"),
@@ -98,12 +111,19 @@ class SchoolServiceImplTest {
                 new SchoolSubjectResponseDTO(3L, "geography", "Linda Morales"),
                 new SchoolSubjectResponseDTO(4L, "history", "Ann Hat")
         );
-        List<SchoolResponseDTO> expected = Arrays.asList(
+        List<SchoolResponseDTO> schoolsResponse = Arrays.asList(
                 new SchoolResponseDTO(1L, "Warsaw", "III", subjectsResponse1),
                 new SchoolResponseDTO(2L, "London", "IV", subjectsResponse2)
         );
+        PageResponseDTO<SchoolResponseDTO> expected = PageResponseDTO.<SchoolResponseDTO>builder()
+                .elements(schoolsResponse)
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .numberOfPages(numberOfPages)
+                .numberOfElements(numberOfElements)
+                .build();
 
-        List<SchoolResponseDTO> actual = underTest.getSchools(sortBy, direction);
+        PageResponseDTO<SchoolResponseDTO> actual = underTest.getSchools(sortBy, direction, pageNumber, pageSize);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -111,6 +131,11 @@ class SchoolServiceImplTest {
     void getSchools_withNullParams() {
         String sortBy = null;
         Sort.Direction direction = null;
+        Integer pageNumber = null;
+        Integer pageSize = null;
+        long numberOfElements = 5L;
+        double pages = (double) numberOfElements / (double) DEFAULT_PAGE_SIZE;
+        int numberOfPages = (int) Math.ceil(pages);
 
         List<SchoolSubject> subjects1 = Arrays.asList(
                 new SchoolSubject(1L, "maths", "John King", null, null),
@@ -120,11 +145,14 @@ class SchoolServiceImplTest {
                 new SchoolSubject(3L, "geography", "Linda Morales", null, null),
                 new SchoolSubject(4L, "history", "Ann Hat", null, null)
         );
-        List<School> schools = Arrays.asList(
+        List<School> elements = Arrays.asList(
                 new School(1L, "Warsaw", "III", subjects1, null),
                 new School(2L, "London", "IV", subjects2, null)
         );
-        Mockito.when(schoolRepository.findAll(Sort.by(DEFAULT_SORT_DIRECTION, DEFAULT_SORT_BY))).thenReturn(schools);
+        PageRequest pageable = PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE,
+                Sort.by(DEFAULT_SORT_DIRECTION, DEFAULT_SORT_BY));
+        Page<School> schools = new PageImpl<>(elements, pageable, numberOfElements);
+        Mockito.when(schoolRepository.findAll(pageable)).thenReturn(schools);
 
         List<SchoolSubjectResponseDTO> subjectsResponse1 = Arrays.asList(
                 new SchoolSubjectResponseDTO(1L, "maths", "John King"),
@@ -134,12 +162,19 @@ class SchoolServiceImplTest {
                 new SchoolSubjectResponseDTO(3L, "geography", "Linda Morales"),
                 new SchoolSubjectResponseDTO(4L, "history", "Ann Hat")
         );
-        List<SchoolResponseDTO> expected = Arrays.asList(
+        List<SchoolResponseDTO> schoolsResponse = Arrays.asList(
                 new SchoolResponseDTO(1L, "Warsaw", "III", subjectsResponse1),
                 new SchoolResponseDTO(2L, "London", "IV", subjectsResponse2)
         );
+        PageResponseDTO<SchoolResponseDTO> expected = PageResponseDTO.<SchoolResponseDTO>builder()
+                .elements(schoolsResponse)
+                .pageNumber(DEFAULT_PAGE_NUMBER)
+                .pageSize(DEFAULT_PAGE_SIZE)
+                .numberOfPages(numberOfPages)
+                .numberOfElements(numberOfElements)
+                .build();
 
-        List<SchoolResponseDTO> actual = underTest.getSchools(sortBy, direction);
+        PageResponseDTO<SchoolResponseDTO> actual = underTest.getSchools(sortBy, direction, pageNumber, pageSize);
         Assertions.assertEquals(expected, actual);
     }
 

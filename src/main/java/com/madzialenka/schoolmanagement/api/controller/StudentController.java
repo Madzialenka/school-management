@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RequestMapping("students")
 @RestController
@@ -15,7 +17,7 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping
-    public StudentResponseDTO createStudent(@RequestBody StudentDataRequestDTO requestDTO) {
+    public StudentResponseDTO createStudent(@Valid @RequestBody StudentDataRequestDTO requestDTO) {
         return studentService.createStudent(requestDTO);
     }
 
@@ -32,7 +34,8 @@ public class StudentController {
     }
 
     @PutMapping("{id}")
-    public StudentResponseDTO updateStudent(@PathVariable("id") Long id, @RequestBody StudentDataRequestDTO requestDTO) {
+    public StudentResponseDTO updateStudent(@PathVariable("id") Long id,
+                                            @Valid @RequestBody StudentDataRequestDTO requestDTO) {
         return studentService.updateStudent(id, requestDTO);
     }
 

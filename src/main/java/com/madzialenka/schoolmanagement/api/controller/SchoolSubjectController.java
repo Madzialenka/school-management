@@ -6,6 +6,7 @@ import com.madzialenka.schoolmanagement.service.SchoolSubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -16,14 +17,14 @@ public class SchoolSubjectController {
 
     @PostMapping
     public SchoolSubjectResponseDTO createSchoolSubject(@PathVariable("schoolId") Long schoolId,
-                                                        @RequestBody SchoolSubjectDataRequestDTO requestDTO) {
+                                                        @Valid @RequestBody SchoolSubjectDataRequestDTO requestDTO) {
         return schoolSubjectService.createSchoolSubject(schoolId, requestDTO);
     }
 
     @PutMapping("{schoolSubjectId}")
     public SchoolSubjectResponseDTO updateSchoolSubject(@PathVariable("schoolId") Long schoolId,
                                                         @PathVariable("schoolSubjectId") Long schoolSubjectId,
-                                                        @RequestBody SchoolSubjectDataRequestDTO requestDTO) {
+                                                        @Valid @RequestBody SchoolSubjectDataRequestDTO requestDTO) {
         return schoolSubjectService.updateSchoolSubject(schoolId, schoolSubjectId, requestDTO);
     }
 

@@ -35,7 +35,8 @@ public class SchoolController {
     }
 
     @PutMapping("{id}")
-    public SchoolResponseDTO updateSchool(@PathVariable("id") Long id, @RequestBody SchoolSimpleDataRequestDTO requestDTO) {
+    public SchoolResponseDTO updateSchool(@PathVariable("id") Long id,
+                                          @Valid @RequestBody SchoolSimpleDataRequestDTO requestDTO) {
         return schoolService.updateSchool(id, requestDTO);
     }
 

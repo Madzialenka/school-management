@@ -1,5 +1,6 @@
 package com.madzialenka.schoolmanagement.api.controller;
 
+import com.madzialenka.schoolmanagement.api.dto.GradesMeanResponseDTO;
 import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectDataRequestDTO;
 import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectResponseDTO;
 import com.madzialenka.schoolmanagement.service.SchoolSubjectService;
@@ -37,5 +38,11 @@ public class SchoolSubjectController {
     @GetMapping
     public List<SchoolSubjectResponseDTO> getSchoolSubjects(@PathVariable("schoolId") Long schoolId) {
         return schoolSubjectService.getSchoolSubjects(schoolId);
+    }
+
+    @GetMapping("{schoolSubjectId}/grades-mean")
+    public GradesMeanResponseDTO getSchoolSubjectGradesMean(@PathVariable("schoolId") Long schoolId,
+                                                            @PathVariable("schoolSubjectId") Long schoolSubjectId) {
+        return schoolSubjectService.getSchoolSubjectGradesMean(schoolId, schoolSubjectId);
     }
 }

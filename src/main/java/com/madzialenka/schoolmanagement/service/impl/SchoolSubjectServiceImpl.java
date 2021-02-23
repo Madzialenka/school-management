@@ -1,5 +1,6 @@
 package com.madzialenka.schoolmanagement.service.impl;
 
+import com.madzialenka.schoolmanagement.api.dto.GradesMeanResponseDTO;
 import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectDataRequestDTO;
 import com.madzialenka.schoolmanagement.api.dto.SchoolSubjectResponseDTO;
 import com.madzialenka.schoolmanagement.db.entity.School;
@@ -57,6 +58,13 @@ public class SchoolSubjectServiceImpl implements SchoolSubjectService {
         return schoolSubjectRepository.findBySchool(school, Sort.by(DIRECTION, SORT_BY)).stream()
                 .map(this::createSchoolSubjectResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public GradesMeanResponseDTO getSchoolSubjectGradesMean(Long schoolId, Long schoolSubjectId) {
+        validateSubjectAndSchool(schoolId, schoolSubjectId);
+        Double mean = schoolSubjectRepository.getSchoolSubjectGradesMean(schoolSubjectId);
+        return new GradesMeanResponseDTO(mean);
     }
 
     private void updateSchoolSubjectBasicData(SchoolSubject foundSubject, SchoolSubjectDataRequestDTO requestDTO) {

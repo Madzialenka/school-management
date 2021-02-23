@@ -4,6 +4,7 @@ import com.madzialenka.schoolmanagement.db.entity.School;
 import com.madzialenka.schoolmanagement.db.entity.SchoolSubject;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,4 +15,7 @@ public interface SchoolSubjectRepository extends JpaRepository<SchoolSubject, Lo
     List<SchoolSubject> findBySchool(School school, Sort sort);
 
     Optional<SchoolSubject> findByIdAndSchool(Long schoolSubjectId, School school);
+
+    @Query(nativeQuery = true, value = "select avg(value) from grades where subject_id = ?")
+    Double getSchoolSubjectGradesMean(Long schoolSubjectId);
 }

@@ -1,9 +1,6 @@
 package com.madzialenka.schoolmanagement.service;
 
-import com.madzialenka.schoolmanagement.api.dto.PageResponseDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolDataRequestDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolResponseDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolSimpleDataRequestDTO;
+import com.madzialenka.schoolmanagement.api.dto.*;
 import org.springframework.data.domain.Sort;
 
 public interface SchoolService {
@@ -15,4 +12,6 @@ public interface SchoolService {
     SchoolResponseDTO updateSchool(Long id, SchoolSimpleDataRequestDTO requestDTO);
 
     void deleteSchool(Long id);
+
+    SchoolSubjectsGradesMeanResponseDTO getSchoolSubjectsGradesMean(Long id);
 }

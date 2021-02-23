@@ -3,6 +3,7 @@ package com.madzialenka.schoolmanagement.service.impl;
 import com.madzialenka.schoolmanagement.api.dto.*;
 import com.madzialenka.schoolmanagement.db.entity.School;
 import com.madzialenka.schoolmanagement.db.entity.SchoolSubject;
+import com.madzialenka.schoolmanagement.db.projection.SchoolSubjectGradesMeanProjection;
 import com.madzialenka.schoolmanagement.db.repository.SchoolRepository;
 import com.madzialenka.schoolmanagement.db.repository.SchoolSubjectRepository;
 import com.madzialenka.schoolmanagement.exception.SchoolNotFoundException;
@@ -79,6 +80,23 @@ public class SchoolServiceImpl implements SchoolService {
         schoolRepository.delete(foundSchool);
     }
 
+    @Override
+    public SchoolSubjectsGradesMeanResponseDTO getSchoolSubjectsGradesMean(Long id) {
+        validateSchoolExistence(id);
+        List<SchoolSubjectGradesMeanProjection> projections = schoolRepository.getSchoolSubjectsGradesMean(id);
+        List<SchoolSubjectGradesMeanDTO> means = projections.stream()
+                .map(this::createSchoolSubjectGradesMeanDTO)
+                .collect(Collectors.toList());
+        return new SchoolSubjectsGradesMeanResponseDTO(means);
+    }
+
+    private SchoolSubjectGradesMeanDTO createSchoolSubjectGradesMeanDTO(SchoolSubjectGradesMeanProjection projection) {
+        SchoolSubjectGradesMeanDTO dto = new SchoolSubjectGradesMeanDTO();
+        dto.setSchoolSubjectId(projection.getSchoolSubjectId());
+        dto.setMean(projection.getMean());
+        return dto;
+    }
+
     private School getSchoolById(Long id) {
         return schoolRepository.findById(id).orElseThrow(() -> new SchoolNotFoundException(id));
     }
@@ -120,5 +138,9 @@ public class SchoolServiceImpl implements SchoolService {
         school.setTown(requestDTO.getTown());
         school.setSchoolNumber(requestDTO.getSchoolNumber());
         return schoolRepository.save(school);
+    }
+
+    private void validateSchoolExistence(Long id) {
+        getSchoolById(id);
     }
 }

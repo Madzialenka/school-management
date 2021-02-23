@@ -1,9 +1,6 @@
 package com.madzialenka.schoolmanagement.api.controller;
 
-import com.madzialenka.schoolmanagement.api.dto.PageResponseDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolDataRequestDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolResponseDTO;
-import com.madzialenka.schoolmanagement.api.dto.SchoolSimpleDataRequestDTO;
+import com.madzialenka.schoolmanagement.api.dto.*;
 import com.madzialenka.schoolmanagement.service.SchoolService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -43,5 +40,10 @@ public class SchoolController {
     @DeleteMapping("{id}")
     public void deleteSchool(@PathVariable("id") Long id) {
         schoolService.deleteSchool(id);
+    }
+
+    @GetMapping("{id}/grades-mean")
+    public SchoolSubjectsGradesMeanResponseDTO getSchoolSubjectsGradesMean(@PathVariable("id") Long id){
+        return schoolService.getSchoolSubjectsGradesMean(id);
     }
 }

@@ -26,6 +26,7 @@ public class SchoolServiceImpl implements SchoolService {
     private static final Sort.Direction DEFAULT_SORT_DIRECTION = Sort.Direction.ASC;
     private static final int DEFAULT_PAGE_NUMBER = 0;
     private static final int DEFAULT_PAGE_SIZE = 1;
+
     private final SchoolRepository schoolRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
 

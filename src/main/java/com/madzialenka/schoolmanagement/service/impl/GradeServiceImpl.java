@@ -24,6 +24,7 @@ public class GradeServiceImpl implements GradeService {
 
     private static final Sort.Direction DIRECTION = Sort.Direction.ASC;
     private static final String SORT_BY = "value";
+
     private final SchoolRepository schoolRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
     private final StudentRepository studentRepository;

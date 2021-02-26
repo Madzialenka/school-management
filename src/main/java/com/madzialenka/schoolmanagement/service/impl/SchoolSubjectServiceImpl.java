@@ -24,6 +24,7 @@ public class SchoolSubjectServiceImpl implements SchoolSubjectService {
 
     private static final Sort.Direction DIRECTION = Sort.Direction.ASC;
     private static final String SORT_BY = "id";
+
     private final SchoolRepository schoolRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
 

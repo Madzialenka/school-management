@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -45,5 +46,11 @@ public class SchoolController {
     @GetMapping("{id}/grades-mean")
     public SchoolSubjectsGradesMeanResponseDTO getSchoolSubjectsGradesMean(@PathVariable("id") Long id){
         return schoolService.getSchoolSubjectsGradesMean(id);
+    }
+
+    @GetMapping("{id}/best-students")
+    public List<StudentResponseDTO> getBestStudents(@PathVariable("id") Long id,
+                                                    @RequestParam("limit") Long limit) {
+        return schoolService.getBestStudents(id, limit);
     }
 }

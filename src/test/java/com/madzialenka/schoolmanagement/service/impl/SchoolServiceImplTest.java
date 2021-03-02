@@ -5,7 +5,9 @@ import com.madzialenka.schoolmanagement.db.entity.School;
 import com.madzialenka.schoolmanagement.db.entity.SchoolSubject;
 import com.madzialenka.schoolmanagement.db.repository.SchoolRepository;
 import com.madzialenka.schoolmanagement.db.repository.SchoolSubjectRepository;
+import com.madzialenka.schoolmanagement.db.repository.StudentRepository;
 import com.madzialenka.schoolmanagement.exception.SchoolNotFoundException;
+import com.madzialenka.schoolmanagement.mapper.StudentResponseDTOMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,12 +36,17 @@ class SchoolServiceImplTest {
     private SchoolServiceImpl underTest;
     private SchoolRepository schoolRepository;
     private SchoolSubjectRepository schoolSubjectRepository;
+    private StudentRepository studentRepository;
+    private StudentResponseDTOMapper studentResponseDTOMapper;
 
     @BeforeEach
     void setUp() {
         schoolRepository = Mockito.mock(SchoolRepository.class);
         schoolSubjectRepository = Mockito.mock(SchoolSubjectRepository.class);
-        underTest = new SchoolServiceImpl(schoolRepository, schoolSubjectRepository);
+        studentRepository = Mockito.mock(StudentRepository.class);
+        studentResponseDTOMapper = Mockito.mock(StudentResponseDTOMapper.class);
+        underTest = new SchoolServiceImpl(schoolRepository, schoolSubjectRepository,
+                studentRepository, studentResponseDTOMapper);
     }
 
     @Test

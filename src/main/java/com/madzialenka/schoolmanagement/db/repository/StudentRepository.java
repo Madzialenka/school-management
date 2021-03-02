@@ -19,4 +19,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             "and student.id <> :id")
     List<Student> findByPeselOrEmailAndNotId(@Param("pesel") String pesel, @Param("email") String email,
                                              @Param("id") Long id);
+
+    @Query("select student from Student student join student.grades grade " +
+            "where student.id in (:ids) group by student.id order by avg(grade.value) desc")
+    List<Student> findAllByIdAndSortByBestGradesMean(@Param("ids") List<Long> bestStudentsIds);
 }

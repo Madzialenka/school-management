@@ -3,10 +3,13 @@ package com.madzialenka.schoolmanagement.service.impl;
 import com.madzialenka.schoolmanagement.api.dto.*;
 import com.madzialenka.schoolmanagement.db.entity.School;
 import com.madzialenka.schoolmanagement.db.entity.SchoolSubject;
+import com.madzialenka.schoolmanagement.db.entity.Student;
 import com.madzialenka.schoolmanagement.db.projection.SchoolSubjectGradesMeanProjection;
 import com.madzialenka.schoolmanagement.db.repository.SchoolRepository;
 import com.madzialenka.schoolmanagement.db.repository.SchoolSubjectRepository;
+import com.madzialenka.schoolmanagement.db.repository.StudentRepository;
 import com.madzialenka.schoolmanagement.exception.SchoolNotFoundException;
+import com.madzialenka.schoolmanagement.mapper.StudentResponseDTOMapper;
 import com.madzialenka.schoolmanagement.service.SchoolService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +32,8 @@ public class SchoolServiceImpl implements SchoolService {
 
     private final SchoolRepository schoolRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
+    private final StudentRepository studentRepository;
+    private final StudentResponseDTOMapper studentResponseDTOMapper;
 
     @Override
     public SchoolResponseDTO createSchool(SchoolDataRequestDTO requestDTO) {
@@ -89,6 +94,16 @@ public class SchoolServiceImpl implements SchoolService {
                 .map(this::createSchoolSubjectGradesMeanDTO)
                 .collect(Collectors.toList());
         return new SchoolSubjectsGradesMeanResponseDTO(means);
+    }
+
+    @Override
+    public List<StudentResponseDTO> getBestStudents(Long id, Long limit) {
+        validateSchoolExistence(id);
+        List<Long> bestStudentsIds = schoolRepository.getBestStudentsIds(id, limit);
+        List<Student> students = studentRepository.findAllByIdAndSortByBestGradesMean(bestStudentsIds);
+        return students.stream()
+                .map(studentResponseDTOMapper::map)
+                .collect(Collectors.toList());
     }
 
     private SchoolSubjectGradesMeanDTO createSchoolSubjectGradesMeanDTO(SchoolSubjectGradesMeanProjection projection) {

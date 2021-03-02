@@ -3,6 +3,8 @@ package com.madzialenka.schoolmanagement.service;
 import com.madzialenka.schoolmanagement.api.dto.*;
 import org.springframework.data.domain.Sort;
 
+import java.util.List;
+
 public interface SchoolService {
     SchoolResponseDTO createSchool(SchoolDataRequestDTO schoolDataRequestDTO);
 
@@ -14,4 +16,6 @@ public interface SchoolService {
     void deleteSchool(Long id);
 
     SchoolSubjectsGradesMeanResponseDTO getSchoolSubjectsGradesMean(Long id);
+
+    List<StudentResponseDTO> getBestStudents(Long id, Long limit);
 }

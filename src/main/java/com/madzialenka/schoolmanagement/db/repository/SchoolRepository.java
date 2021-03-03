@@ -1,6 +1,7 @@
 package com.madzialenka.schoolmanagement.db.repository;
 
 import com.madzialenka.schoolmanagement.db.entity.School;
+import com.madzialenka.schoolmanagement.db.projection.SchoolSubjectCountProjection;
 import com.madzialenka.schoolmanagement.db.projection.SchoolSubjectGradesMeanProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -32,4 +33,9 @@ public interface SchoolRepository extends JpaRepository<School, Long> {
             "group by grades.student_id order by avg(grades.value) asc limit 1 offset :limit - 1)",
             nativeQuery = true)
     List<Long> getWorstStudentsIds(@Param("id") Long id, @Param("limit") Long limit);
+
+    @Query(value = "select name subjectName, count(name) count from school_subjects group by subjectName " +
+            "order by count desc limit :limit",
+            nativeQuery = true)
+    List<SchoolSubjectCountProjection> getSchoolSubjectCount(@Param("limit") Long limit);
 }

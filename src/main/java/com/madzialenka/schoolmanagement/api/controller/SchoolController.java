@@ -59,4 +59,9 @@ public class SchoolController {
                                                      @RequestParam("limit") Long limit) {
         return schoolService.getWorstStudents(id, limit);
     }
+
+    @GetMapping("subject-count-summary")
+    public SchoolSubjectCountSummaryResponseDTO getSchoolSubjectCountSummary(@RequestParam("limit") Long limit) {
+        return schoolService.getSchoolSubjectCountSummary(limit);
+    }
 }

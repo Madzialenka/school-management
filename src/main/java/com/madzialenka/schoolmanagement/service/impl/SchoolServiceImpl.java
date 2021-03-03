@@ -4,6 +4,7 @@ import com.madzialenka.schoolmanagement.api.dto.*;
 import com.madzialenka.schoolmanagement.db.entity.School;
 import com.madzialenka.schoolmanagement.db.entity.SchoolSubject;
 import com.madzialenka.schoolmanagement.db.entity.Student;
+import com.madzialenka.schoolmanagement.db.projection.SchoolSubjectCountProjection;
 import com.madzialenka.schoolmanagement.db.projection.SchoolSubjectGradesMeanProjection;
 import com.madzialenka.schoolmanagement.db.repository.SchoolRepository;
 import com.madzialenka.schoolmanagement.db.repository.SchoolSubjectRepository;
@@ -61,17 +62,6 @@ public class SchoolServiceImpl implements SchoolService {
         return createPageResponseDTO(schools, elements);
     }
 
-    private PageResponseDTO<SchoolResponseDTO> createPageResponseDTO(Page<School> schools,
-                                                                     List<SchoolResponseDTO> elements) {
-        return PageResponseDTO.<SchoolResponseDTO>builder()
-                .elements(elements)
-                .pageNumber(schools.getNumber())
-                .pageSize(schools.getSize())
-                .numberOfPages(schools.getTotalPages())
-                .numberOfElements(schools.getTotalElements())
-                .build();
-    }
-
     @Override
     public SchoolResponseDTO updateSchool(Long id, SchoolSimpleDataRequestDTO requestDTO) {
         School foundSchool = getSchoolById(id);
@@ -114,6 +104,33 @@ public class SchoolServiceImpl implements SchoolService {
         return students.stream()
                 .map(studentResponseDTOMapper::map)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public SchoolSubjectCountSummaryResponseDTO getSchoolSubjectCountSummary(Long limit) {
+        List<SchoolSubjectCountProjection> projections = schoolRepository.getSchoolSubjectCount(limit);
+        List<SchoolSubjectCountDTO> subjectCounts = projections.stream()
+                .map(this::createSchoolSubjectCountDTO)
+                .collect(Collectors.toList());
+        return new SchoolSubjectCountSummaryResponseDTO(subjectCounts);
+    }
+
+    private SchoolSubjectCountDTO createSchoolSubjectCountDTO(SchoolSubjectCountProjection projection) {
+        SchoolSubjectCountDTO dto = new SchoolSubjectCountDTO();
+        dto.setSubjectName(projection.getSubjectName());
+        dto.setCount(projection.getCount());
+        return dto;
+    }
+
+    private PageResponseDTO<SchoolResponseDTO> createPageResponseDTO(Page<School> schools,
+                                                                     List<SchoolResponseDTO> elements) {
+        return PageResponseDTO.<SchoolResponseDTO>builder()
+                .elements(elements)
+                .pageNumber(schools.getNumber())
+                .pageSize(schools.getSize())
+                .numberOfPages(schools.getTotalPages())
+                .numberOfElements(schools.getTotalElements())
+                .build();
     }
 
     private SchoolSubjectGradesMeanDTO createSchoolSubjectGradesMeanDTO(SchoolSubjectGradesMeanProjection projection) {

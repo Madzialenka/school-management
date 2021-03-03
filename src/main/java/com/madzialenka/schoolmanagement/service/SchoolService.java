@@ -20,4 +20,6 @@ public interface SchoolService {
     List<StudentResponseDTO> getBestStudents(Long id, Long limit);
 
     List<StudentResponseDTO> getWorstStudents(Long id, Long limit);
+
+    SchoolSubjectCountSummaryResponseDTO getSchoolSubjectCountSummary(Long limit);
 }

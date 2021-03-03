@@ -53,4 +53,10 @@ public class SchoolController {
                                                     @RequestParam("limit") Long limit) {
         return schoolService.getBestStudents(id, limit);
     }
+
+    @GetMapping("{id}/worst-students")
+    public List<StudentResponseDTO> getWorstStudents(@PathVariable("id") Long id,
+                                                     @RequestParam("limit") Long limit) {
+        return schoolService.getWorstStudents(id, limit);
+    }
 }

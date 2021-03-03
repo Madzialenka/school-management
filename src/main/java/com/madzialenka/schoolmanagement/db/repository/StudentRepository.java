@@ -23,4 +23,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("select student from Student student join student.grades grade " +
             "where student.id in (:ids) group by student.id order by avg(grade.value) desc")
     List<Student> findAllByIdAndSortByBestGradesMean(@Param("ids") List<Long> bestStudentsIds);
+
+    @Query("select student from Student student join student.grades grade " +
+            "where student.id in (:ids) group by student.id order by avg(grade.value) asc")
+    List<Student> findAllByIdAndSortByWorstGradesMean(@Param("ids") List<Long> worstStudentsIds);
 }

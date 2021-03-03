@@ -106,6 +106,16 @@ public class SchoolServiceImpl implements SchoolService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<StudentResponseDTO> getWorstStudents(Long id, Long limit) {
+        validateSchoolExistence(id);
+        List<Long> worstStudentsIds = schoolRepository.getWorstStudentsIds(id, limit);
+        List<Student> students = studentRepository.findAllByIdAndSortByWorstGradesMean(worstStudentsIds);
+        return students.stream()
+                .map(studentResponseDTOMapper::map)
+                .collect(Collectors.toList());
+    }
+
     private SchoolSubjectGradesMeanDTO createSchoolSubjectGradesMeanDTO(SchoolSubjectGradesMeanProjection projection) {
         SchoolSubjectGradesMeanDTO dto = new SchoolSubjectGradesMeanDTO();
         dto.setSchoolSubjectId(projection.getSchoolSubjectId());

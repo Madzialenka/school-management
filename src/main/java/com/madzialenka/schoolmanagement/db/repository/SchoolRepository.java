@@ -24,4 +24,12 @@ public interface SchoolRepository extends JpaRepository<School, Long> {
             "group by grades.student_id order by avg(grades.value) desc limit 1 offset :limit - 1)",
             nativeQuery = true)
     List<Long> getBestStudentsIds(@Param("id") Long id, @Param("limit") Long limit);
+
+    @Query(value = "select grades.student_id from grades inner join school_subjects on grades.subject_id = " +
+            "school_subjects.id where school_subjects.school_id = :id group by grades.student_id " +
+            "having avg(grades.value) <= (select avg(grades.value) from grades inner join school_subjects " +
+            "on grades.subject_id = school_subjects.id where school_subjects.school_id = :id " +
+            "group by grades.student_id order by avg(grades.value) asc limit 1 offset :limit - 1)",
+            nativeQuery = true)
+    List<Long> getWorstStudentsIds(@Param("id") Long id, @Param("limit") Long limit);
 }

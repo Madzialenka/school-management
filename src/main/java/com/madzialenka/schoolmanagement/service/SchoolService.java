@@ -18,4 +18,6 @@ public interface SchoolService {
     SchoolSubjectsGradesMeanResponseDTO getSchoolSubjectsGradesMean(Long id);
 
     List<StudentResponseDTO> getBestStudents(Long id, Long limit);
+
+    List<StudentResponseDTO> getWorstStudents(Long id, Long limit);
 }

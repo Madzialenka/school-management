@@ -5,6 +5,8 @@ import com.madzialenka.schoolmanagement.api.dto.StudentDataRequestDTO;
 import com.madzialenka.schoolmanagement.api.dto.StudentResponseDTO;
 import org.springframework.data.domain.Sort;
 
+import java.util.List;
+
 public interface StudentService {
     StudentResponseDTO createStudent(StudentDataRequestDTO requestDTO);
 
@@ -14,4 +16,6 @@ public interface StudentService {
     StudentResponseDTO updateStudent(Long id, StudentDataRequestDTO requestDTO);
 
     void deleteStudent(Long id);
+
+    List<StudentResponseDTO> getBusiestStudents(Long limit);
 }

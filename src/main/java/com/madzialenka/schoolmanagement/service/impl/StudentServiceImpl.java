@@ -92,6 +92,15 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.delete(foundStudent);
     }
 
+    @Override
+    public List<StudentResponseDTO> getBusiestStudents(Long limit) {
+        List<Long> busiestStudentsIds = studentRepository.getBusiestStudentsIds(limit);
+        List<Student> students = studentRepository.findAllByIdAndSortBySchoolCount(busiestStudentsIds);
+        return students.stream()
+                .map(mapper::map)
+                .collect(Collectors.toList());
+    }
+
     private Student getStudentById(Long id) {
         return studentRepository.findById(id).orElseThrow(() -> new StudentNotFoundException(id));
     }

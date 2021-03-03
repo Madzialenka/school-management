@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("students")
@@ -42,5 +43,10 @@ public class StudentController {
     @DeleteMapping("{id}")
     public void deleteStudent(@PathVariable("id") Long id) {
         studentService.deleteStudent(id);
+    }
+
+    @GetMapping("busiest")
+    public List<StudentResponseDTO> getBusiestStudents(@RequestParam("limit") Long limit) {
+        return studentService.getBusiestStudents(limit);
     }
 }

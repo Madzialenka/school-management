@@ -27,4 +27,14 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("select student from Student student join student.grades grade " +
             "where student.id in (:ids) group by student.id order by avg(grade.value) asc")
     List<Student> findAllByIdAndSortByWorstGradesMean(@Param("ids") List<Long> worstStudentsIds);
+
+    @Query(value = "select student_id from students_schools group by student_id " +
+            "having count(school_id) >= (select count(school_id) from students_schools " +
+            "group by student_id order by count(school_id) desc limit 1 offset :limit - 1)",
+            nativeQuery = true)
+    List<Long> getBusiestStudentsIds(@Param("limit") Long limit);
+
+    @Query("select student from Student student join student.schools school " +
+            "where student.id in (:ids) group by student.id order by count(school.id) desc")
+    List<Student> findAllByIdAndSortBySchoolCount(@Param("ids") List<Long> busiestStudentsIds);
 }

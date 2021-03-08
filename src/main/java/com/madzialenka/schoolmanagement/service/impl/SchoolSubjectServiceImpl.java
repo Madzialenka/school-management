@@ -12,6 +12,10 @@ import com.madzialenka.schoolmanagement.exception.SchoolSubjectNotFoundException
 import com.madzialenka.schoolmanagement.exception.SubjectNotInSchoolException;
 import com.madzialenka.schoolmanagement.service.SchoolSubjectService;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +28,10 @@ public class SchoolSubjectServiceImpl implements SchoolSubjectService {
 
     private static final Sort.Direction DIRECTION = Sort.Direction.ASC;
     private static final String SORT_BY = "id";
+    private static final String SHEET_NAME = "School Subjects";
+    private static final String NAME_COLUMN_TITLE = "Name";
+    private static final String SCHOOL_COLUMN_TITLE = "School";
+    private static final String TEACHER_COLUMN_TITLE = "Teacher";
 
     private final SchoolRepository schoolRepository;
     private final SchoolSubjectRepository schoolSubjectRepository;
@@ -66,6 +74,45 @@ public class SchoolSubjectServiceImpl implements SchoolSubjectService {
         validateSubjectAndSchool(schoolId, schoolSubjectId);
         Double mean = schoolSubjectRepository.getSchoolSubjectGradesMean(schoolSubjectId);
         return new GradesMeanResponseDTO(mean);
+    }
+
+    @Override
+    public Workbook exportSchoolSubjectsToExcel(Long schoolId) {
+        School school = getSchoolById(schoolId);
+        List<SchoolSubject> schoolSubjects = schoolSubjectRepository.findBySchool(school, Sort.by(DIRECTION, SORT_BY));
+        return createSchoolSubjectsExcel(school, schoolSubjects);
+    }
+
+    private Workbook createSchoolSubjectsExcel(School school, List<SchoolSubject> schoolSubjects) {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet(SHEET_NAME);
+        createTitleRow(sheet);
+        completeExcelWithSchoolSubjectsData(school, schoolSubjects, sheet);
+        setAutoSizeColumns(sheet);
+        return workbook;
+    }
+
+    private void setAutoSizeColumns(Sheet sheet) {
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+        sheet.autoSizeColumn(2);
+    }
+
+    private void completeExcelWithSchoolSubjectsData(School school, List<SchoolSubject> schoolSubjects, Sheet sheet) {
+        for (int i = 1; i < schoolSubjects.size() + 1; i++) {
+            SchoolSubject subject = schoolSubjects.get(i - 1);
+            Row row = sheet.createRow(i);
+            row.createCell(0).setCellValue(subject.getName());
+            row.createCell(1).setCellValue(String.format("%s %s", school.getTown(), school.getSchoolNumber()));
+            row.createCell(2).setCellValue(subject.getTeacherName());
+        }
+    }
+
+    private void createTitleRow(Sheet sheet) {
+        Row titleRow = sheet.createRow(0);
+        titleRow.createCell(0).setCellValue(NAME_COLUMN_TITLE);
+        titleRow.createCell(1).setCellValue(SCHOOL_COLUMN_TITLE);
+        titleRow.createCell(2).setCellValue(TEACHER_COLUMN_TITLE);
     }
 
     private void updateSchoolSubjectBasicData(SchoolSubject foundSubject, SchoolSubjectDataRequestDTO requestDTO) {

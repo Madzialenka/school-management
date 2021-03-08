@@ -18,6 +18,8 @@
 		<java.version>11</java.version>
 		<postgresql.version>42.2.18</postgresql.version>
 		<springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
+		<poi.version>5.0.0</poi.version>
+		<poi-ooxml.version>5.0.0</poi-ooxml.version>
 	</properties>
 
 	<dependencies>
@@ -47,6 +49,16 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-boot-starter</artifactId>
 			<version>${springfox-boot-starter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${poi-ooxml.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

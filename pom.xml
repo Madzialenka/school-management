@@ -20,6 +20,7 @@
 		<springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
 		<poi.version>5.0.0</poi.version>
 		<poi-ooxml.version>5.0.0</poi-ooxml.version>
+		<liquibase-core.version>4.3.1</liquibase-core.version>
 	</properties>
 
 	<dependencies>
@@ -59,6 +60,11 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>${poi-ooxml.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>${liquibase-core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

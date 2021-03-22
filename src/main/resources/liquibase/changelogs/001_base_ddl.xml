@@ -5,8 +5,81 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 
     <changeSet id="001_base_ddl" author="madzialenka">
-        <createTable tableName="person">
-            <column name="address" type="varchar(255)"/>
+
+        <createTable tableName="students">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="surname" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="pesel" type="varchar(11)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="gender" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+
+        <createTable tableName="schools">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="town" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="school_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="schools" columnNames="town, school_number"/>
+
+        <createTable tableName="school_subjects">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="teacher_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="school_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="school_subjects_schools_id_fk" references="schools(id)"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="school_subjects" columnNames="name, school_id"/>
+
+        <createTable tableName="grades">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="value" type="smallint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="student_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="grades_students_id_fk" references="students(id)"/>
+            </column>
+            <column name="subject_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="grades_school_subjects_id_fk" references="school_subjects(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="students_schools">
+            <column name="student_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="students_schools_students_id_fk" references="students(id)"/>
+            </column>
+            <column name="school_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="students_schools_schools_id_fk" references="schools(id)"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="students_schools" columnNames="student_id, school_id"/>
+        
     </changeSet>
 </databaseChangeLog>

@@ -8,3 +8,8 @@ spring:
       ddl-auto: validate
   liquibase:
     change-log: classpath:/liquibase/liquibase-master.xml
+  banner:
+    location: classpath:/banner.txt
+  output:
+    ansi:
+      enabled: always

@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
+@Builder
 public class SchoolDataRequestDTO {
 
     @NotBlank(message = "Town can't be blank")

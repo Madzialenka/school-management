@@ -1,0 +1,1 @@
+docker rm -f school-management_testdb_1
